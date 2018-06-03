@@ -40,13 +40,18 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
             Death();
         }
 
-		if (InRange() && canAttack()) {
-            Debug.Log("COLLIDED");
-            // Perform attack animation here and call Attack();
-            Attack();
+        if (InRange()) {
+            if (canAttack()) {
+                Debug.Log("COLLIDED");
+                // Perform attack animation here and call Attack();
+                Attack();
+            }
+        }
+        else {
+            Move();
         }
 
-        Move();
+        
 	}
 
     /**
