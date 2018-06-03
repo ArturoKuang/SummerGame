@@ -5,7 +5,6 @@ using UnityEngine;
 public class PlayerBullet : Bullet {
 
     public float speed = 1.0f;
-    public float offset = 2.0f;
     [SerializeField]
     private float energyCost = 30;
     [SerializeField]
