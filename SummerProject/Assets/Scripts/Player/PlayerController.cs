@@ -6,19 +6,25 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerBullet))]
 public class PlayerController : MonoBehaviour {
 
+    #region attribute
     public float movementSpeed = 3.0f;
     private PlayerBullet bulletScript;
     private Player player;
     private Plane plane;
     private Ray ray;
     private Dash dash;
-
+    private Animator animator;
+    private Rigidbody rb;
+    private Vector3 lastPosition = Vector3.zero;
+    #endregion
 
     void Start()
     {
+        rb = GetComponent<Rigidbody>();
         dash = GetComponent<Dash>();
         player = GetComponent<Player>();
         bulletScript = GetComponent<PlayerBullet>();
+        animator = GetComponent<Animator>();
         plane = new Plane(Vector3.up, Vector3.zero);
     }
 
@@ -41,8 +47,40 @@ public class PlayerController : MonoBehaviour {
         float moveVertical = Input.GetAxis("Vertical");
         float x = transform.position.x + moveHorizontal * movementSpeed * Time.deltaTime;
         float z = transform.position.z + moveVertical * movementSpeed * Time.deltaTime;
-        transform.position = new Vector3(x, transform.position.y, z);
 
+        //player animations
+        Vector3 playerDirection = transform.position - lastPosition;
+        playerDirection.Normalize();
+        Vector3 localDirection = transform.InverseTransformDirection(playerDirection);
+        lastPosition = transform.position;
+
+        if(localDirection.z > 0.1)
+        {
+            animator.SetBool("run", true);
+        }
+        else if(localDirection.z < -0.1)
+        {
+            animator.SetBool("run_back", true);
+        }
+        else if(localDirection.x > 0.0)
+        {
+            animator.SetBool("right", true);
+        }
+        else if (localDirection.x < -0.0)
+        {
+            animator.SetBool("left", true);
+        }
+        else
+        {
+            animator.SetBool("right", false);
+            animator.SetBool("left", false);
+            animator.SetBool("run", false);
+            animator.SetBool("run_back", false);
+        }
+
+
+        //update player position
+        transform.position = new Vector3(x, transform.position.y, z);
 
         //Player actions 
         if (Input.GetMouseButtonDown(0) && bulletScript.CanStartAbility()) 
