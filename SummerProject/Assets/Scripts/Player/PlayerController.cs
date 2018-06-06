@@ -12,7 +12,8 @@ public class PlayerController : MonoBehaviour {
     private Plane plane;
     private Ray ray;
     private Dash dash;
-
+    private float xStickAxis;
+    private float yStickAxis;
 
     void Start()
     {
@@ -25,14 +26,28 @@ public class PlayerController : MonoBehaviour {
     void Update()
     {
 
-        //rotate player around mouse 
+        // rotate player around mouse 
         float distance;
+        float rotation = 0f;
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
         if(plane.Raycast(ray, out distance))
         {
             Vector3 target = ray.GetPoint(distance);
             Vector3 direction = target - transform.position;
-            float rotation = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
+
+            rotation = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;       
+        }
+
+        // rotate player around right stick
+        else {
+            xStickAxis = Input.GetAxis("RStick X");
+            yStickAxis = Input.GetAxis("RStick Y");
+            rotation = Mathf.Atan2(xStickAxis, yStickAxis) * Mathf.Rad2Deg;
+        }
+
+        // checks for default controller position
+        if (rotation != 0) {
             transform.rotation = Quaternion.Euler(0, rotation, 0);
         }
 
@@ -44,12 +59,32 @@ public class PlayerController : MonoBehaviour {
         transform.position = new Vector3(x, transform.position.y, z);
 
 
-        //Player actions 
-        if (Input.GetMouseButtonDown(0) && bulletScript.CanStartAbility()) 
+
+        /**
+         * Player actions
+         * 
+         * Below is a full list of controller inputs for PlayStation and XBOX controllers:
+         * JoystickButton0 - X (square)
+         * JoystickButton1 - A (cross)
+         * JoystickButton2 - B (circle)
+         * JoystickButton3 - Y (triangle)
+         * JoystickButton4  - LB (L1)
+         * JoystickButton5  - RB (R1)
+         * JoystickButton6  - LT (L2)
+         * JoystickButton7  - RT (R2)
+         * JoystickButton8 - back
+         * JoystickButton9 - start
+         * JoystickButton10 - left stick[not direction, button]
+         * JoystickButton11 - right stick[not direction, button]
+         * 
+         * For now, Fire1 is left click and RB (R1), and Dash is left shift and LB (L1)
+         */
+
+        if (Input.GetButtonDown("Fire1") && bulletScript.CanStartAbility())
         {
             bulletScript.Shoot();
         }
-        if (Input.GetKeyDown(KeyCode.LeftShift) && dash.CanStartAbility())
+        if (Input.GetButtonDown("Dash") && dash.CanStartAbility())
         {
             dash.StartAbility();
         }

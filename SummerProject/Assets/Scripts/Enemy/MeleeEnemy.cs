@@ -9,15 +9,29 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
     public Transform target;
     protected NavMeshAgent ThisAgent = null;
     private float meleeCD = 1.0f;
-    private float meleeDistance = 5;
+    private float meleeDistance = 1.5f;
+    private float meleeDamage = 10;
+
+    private float meleeStartTime = float.MinValue;
 
     public float health;
     public Rigidbody rb;
+
+    public GameObject player;
+    public Player playerScript;
+
+
+    /**
+     * Allows modification of health 
+     */
+    public float Health { get { return health; } set { health = value; } }
 
     // Use this for initialization
     void Start () {
         health = 60;
         ThisAgent = GetComponent<NavMeshAgent>();
+        player = GameObject.FindGameObjectWithTag("Player");
+        playerScript = player.GetComponent<Player>();
     }
 	
 	// Update is called once per frame
@@ -26,16 +40,27 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
             Death();
         }
 
-		if (InRange()) {
-            // Perform attack animation here and call Attack();
-            Attack();
+        if (InRange()) {
+            if (canAttack()) {
+                Debug.Log("COLLIDED");
+                // Perform attack animation here and call Attack();
+                Attack();
+            }
+        }
+        else {
+            Move();
         }
 
-        Move();
+        
 	}
 
+    /**
+     * Attacks the player and takes off their health
+     * TODO: Implement the animation of hitting, and slow down or stop the enemy when it is playing this animation.
+     */
     public void Attack() {
-
+        playerScript.Health -= meleeDamage;
+        meleeStartTime = Time.time;
     }
 
     /**
@@ -58,11 +83,16 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
      * Checks if enemy is in range of player to perform an attack
      */
     private bool InRange() {
-        if (Vector3.Distance(target.position, transform.position) > meleeDistance) {
-            return false;
+        if (Vector3.Distance(target.position, transform.position) <= meleeDistance) {
+            return true;
         }
 
-        return true;
+        return false;
+    }
+
+    private bool canAttack() {
+        // Add animation duration later
+        return (Time.time - meleeStartTime) > meleeCD;
     }
 
 
