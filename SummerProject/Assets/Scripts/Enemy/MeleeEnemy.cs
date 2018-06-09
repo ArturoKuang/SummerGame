@@ -76,11 +76,6 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
 
     }
 
-    void OnDrawGizmosSelected() {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(transform.position, deAggroDistance);
-    }
-
     /**
      * Attacks the player and takes off their health
      * TODO: Implement the animation of hitting, and slow down or stop the enemy when it is playing this animation.
