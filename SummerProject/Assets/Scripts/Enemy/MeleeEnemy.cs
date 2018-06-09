@@ -43,26 +43,32 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
         if (health <= 0) {
             Death();
         }
-        
+
+        ResetAnimations();
+
         // Check if enemy will attack or move
         float curr_distance = CheckPlayerDistance();
-        if (curr_distance <= meleeDistance && canAttack()) {
-            Debug.Log("PLAYER HIT");
-            Attack();
+        if (curr_distance <= meleeDistance) {
+            StopMoving();
+            if (canAttack()) {
+                Debug.Log("PLAYER HIT");
+                // PLACEHOLDER, will change once I get attack animations up and running. It will probably be animator.SetBool("Attack", true)
+                Attack();
+            }
         }
+        // Move if enemy is within range of the player
         else if (curr_distance <= aggroDistance) {
-            ResetAnimations();
             Move();
         }
         // If the player aggro'd the enemy, but has now gone out of range, then stop
-        else if (curr_distance >= deAggroDistance && isMoving) {
-            StopMoving();
-            ResetAnimations();
+        else if (curr_distance >= deAggroDistance) {
+            if (isMoving) {
+                StopMoving();
+            }
             animator.SetBool("Idle", true);
         }
         else {
-            if (animator.GetBool("Idle") == false) {
-                ResetAnimations();
+            if (!animator.GetBool("Idle")) {
                 animator.SetBool("Idle", true);
             }
         }
@@ -85,6 +91,7 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
         ThisAgent.isStopped = false;
         isMoving = true;
         ThisAgent.SetDestination(target.position);
+        ResetAnimations();
         SetWalkingAnimation();
     }
 
@@ -149,6 +156,7 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
      */
     private void StopMoving() {
         isMoving = false;
+        ThisAgent.velocity = Vector3.zero;
         ThisAgent.isStopped = true;
     }
 
