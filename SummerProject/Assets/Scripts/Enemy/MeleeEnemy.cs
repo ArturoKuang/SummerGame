@@ -50,7 +50,7 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
         float curr_distance = CheckPlayerDistance();
         if (curr_distance <= meleeDistance) {
             StopMoving();
-            if (canAttack()) {
+            if (CanAttack()) {
                 Debug.Log("PLAYER HIT");
                 // PLACEHOLDER, will change once I get attack animations up and running. It will probably be animator.SetBool("Attack", true)
                 Attack();
@@ -97,6 +97,15 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
     }
 
     /**
+     * Stops the navmesh agent
+     */
+    public void StopMoving() {
+        isMoving = false;
+        ThisAgent.velocity = Vector3.zero;
+        ThisAgent.isStopped = true;
+    }
+
+    /**
      * Play the death animation, then delete the model after it finishes
      */
     public void Death() {
@@ -106,7 +115,7 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
     /**
      * Checks to see if the melee cool down has refreshed or not
      */
-    private bool canAttack() {
+    public bool CanAttack() {
         // Add animation duration later
         return (Time.time - meleeStartTime) > meleeCD;
     }
@@ -114,14 +123,14 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
     /**
      * Returns Distance between enemy and player
      */
-    private float CheckPlayerDistance() {
+    public float CheckPlayerDistance() {
         return Vector3.Distance(target.position, transform.position);
     }
 
     /**
      * Sets the corresponding walking animation based on angle to player
      */
-    private void SetWalkingAnimation() {
+    public void SetWalkingAnimation() {
         Vector3 targetDir = target.position - transform.position;
         float angle = Vector3.SignedAngle(targetDir, transform.forward, Vector3.up);
         float topLeft = 43.75f, topRight = -43.75f;
@@ -144,7 +153,7 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
     /**
      * Reset all booealn parameters for animation states except for Idle
      */
-    private void ResetAnimations() {
+    public void ResetAnimations() {
         animator.SetBool("Forward", false);
         animator.SetBool("Backward", false);
         animator.SetBool("Left", false);
@@ -152,14 +161,6 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
         animator.SetBool("Idle", false);
     }
 
-    /**
-     * Stops the navmesh agent
-     */
-    private void StopMoving() {
-        isMoving = false;
-        ThisAgent.velocity = Vector3.zero;
-        ThisAgent.isStopped = true;
-    }
 
 
 
