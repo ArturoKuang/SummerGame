@@ -7,15 +7,17 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
 
     [SerializeField]
     public Transform target;
+    public float health = 60f;
     public float meleeDistance = 1.5f;
-    public float aggroDistance = 8f;
+    public float aggroDistance = 6f;
+    public float deAggroDistance = 9f;
     public float meleeCD = 1.0f;
-    public float meleeDamage = 10;
+    public float meleeDamage = 10f;
     private float meleeStartTime = float.MinValue;
+    private bool isMoving = false;
 
     protected NavMeshAgent ThisAgent = null;
     
-    public float health;
     public Rigidbody rb;
 
     private  GameObject player;
@@ -30,7 +32,6 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
 
     // Use this for initialization
     void Start () {
-        health = 60;
         ThisAgent = GetComponent<NavMeshAgent>();
         player = GameObject.FindGameObjectWithTag("Player");
         playerScript = player.GetComponent<Player>();
@@ -42,20 +43,22 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
         if (health <= 0) {
             Death();
         }
-
+        
         // Check if enemy will attack or move
         float curr_distance = CheckPlayerDistance();
-        if (curr_distance <= aggroDistance) {
-            if (curr_distance <= meleeDistance) {
-                if (canAttack()) {
-                    Debug.Log("PLAYER HIT");
-                    Attack();   // Perform attack animation here and call Attack();
-                }
-            } else {
-                animator.SetBool("Idle", false);
-                ResetAnimations();
-                Move();
-            }
+        if (curr_distance <= meleeDistance && canAttack()) {
+            Debug.Log("PLAYER HIT");
+            Attack();
+        }
+        else if (curr_distance <= aggroDistance) {
+            ResetAnimations();
+            Move();
+        }
+        // If the player aggro'd the enemy, but has now gone out of range, then stop
+        else if (curr_distance >= deAggroDistance && isMoving) {
+            StopMoving();
+            ResetAnimations();
+            animator.SetBool("Idle", true);
         }
         else {
             if (animator.GetBool("Idle") == false) {
@@ -64,7 +67,7 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
             }
         }
 
-	}
+    }
 
     /**
      * Attacks the player and takes off their health
@@ -79,6 +82,8 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
      * Simply move towards the player using navmesh
      */
     public void Move() {
+        ThisAgent.isStopped = false;
+        isMoving = true;
         ThisAgent.SetDestination(target.position);
         SetWalkingAnimation();
     }
@@ -87,9 +92,7 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
      * Play the death animation, then delete the model after it finishes
      */
     public void Death() {
-        Animation death = GetComponent<Animation>(); // Need to get actual animations lol
         animator.SetTrigger("Death");
-        Destroy(gameObject, death.clip.length);
     }
 
     /**
@@ -113,18 +116,20 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
     private void SetWalkingAnimation() {
         Vector3 targetDir = target.position - transform.position;
         float angle = Vector3.SignedAngle(targetDir, transform.forward, Vector3.up);
+        float topLeft = 43.75f, topRight = -43.75f;
+        float botLeft = 131.25f, botRight = -131.25f;
 
-        if (angle <= 43.75 && angle >= -43.75) {
+        if (angle <= topLeft && angle >= topRight) {
             animator.SetBool("Forward", true);
         }
-        else if (angle < 131.25 && angle > 43.75) {
-            animator.SetBool("Right", true);
+        else if (angle < botLeft && angle > topLeft) {
+            animator.SetBool("Left", true);
         }
-        else if ((angle <= 180 && angle >= 131.25) || (angle <= -131.25 && angle >= -180)) {
+        else if ((angle <= 180 && angle >= botLeft) || (angle <= botRight && angle >= -180)) {
             animator.SetBool("Backward", true);
         }
-        else if (angle < -43.75 && angle > -131.25) {
-            animator.SetBool("Left", true);
+        else if (angle < topRight && angle > botRight) {
+            animator.SetBool("Right", true);
         }
     }
 
@@ -137,6 +142,14 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
         animator.SetBool("Left", false);
         animator.SetBool("Right", false);
         animator.SetBool("Idle", false);
+    }
+
+    /**
+     * Stops the navmesh agent
+     */
+    private void StopMoving() {
+        isMoving = false;
+        ThisAgent.isStopped = true;
     }
 
 
