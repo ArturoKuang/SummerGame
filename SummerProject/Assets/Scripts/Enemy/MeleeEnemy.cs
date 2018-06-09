@@ -57,11 +57,11 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
             }
         }
         // Move if enemy is within range of the player
-        else if (curr_distance <= aggroDistance) {
+        else if ((curr_distance <= aggroDistance) || (curr_distance <= deAggroDistance && isMoving)) {
             Move();
         }
         // If the player aggro'd the enemy, but has now gone out of range, then stop
-        else if (curr_distance >= deAggroDistance) {
+        else if (curr_distance > deAggroDistance) {
             if (isMoving) {
                 StopMoving();
             }
@@ -73,6 +73,12 @@ public class MeleeEnemy : MonoBehaviour, IEnemy {
             }
         }
 
+
+    }
+
+    void OnDrawGizmosSelected() {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(transform.position, deAggroDistance);
     }
 
     /**

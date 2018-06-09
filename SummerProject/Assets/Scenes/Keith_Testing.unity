@@ -148,7 +148,7 @@ MonoBehaviour:
   minDistance: 1
   maxDistance: 15
   offset: {x: 0, y: 5, z: -5}
-  smoothSpeed: 1
+  smoothSpeed: 0.2
   scrollSensitivity: 10
   velocity: {x: 0.0000007103413, y: 0.012238339, z: -0.012236094}
 --- !u!81 &284078444
