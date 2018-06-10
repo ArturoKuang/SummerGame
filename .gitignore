@@ -89,7 +89,7 @@ ipch/
 *.cachefile
 *.storage.ide-wal
 *.storage.ide-shm
-*.storage.ide-wal
+*.storage.ide
 
 # Visual Studio profiler
 *.psess
