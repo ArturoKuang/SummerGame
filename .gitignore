@@ -31,7 +31,6 @@ local.properties
 # PDT-specific
 .buildpath
 
-
 #################
 ## Visual Studio
 #################
@@ -80,6 +79,7 @@ build/
 *.log
 *.scc
 
+
 # Visual C++ cache files
 ipch/
 *.aps
@@ -87,6 +87,9 @@ ipch/
 *.opensdf
 *.sdf
 *.cachefile
+*.storage.ide-wal
+*.storage.ide-shm
+*.storage.ide-wal
 
 # Visual Studio profiler
 *.psess
