@@ -9,13 +9,11 @@ public class PlayerController : MonoBehaviour {
     #region attribute
     public float movementSpeed = 3.0f;
     private PlayerBullet bulletScript;
-    private Player player;
     private Plane plane;
     private Ray ray;
     private Dash dash;
     private Animator animator;
     private Rigidbody rb;
-    private Vector3 lastPosition = Vector3.zero;
     private PlayerMelee melee;
 	private float xStickAxis;
     private float yStickAxis;
@@ -28,7 +26,6 @@ public class PlayerController : MonoBehaviour {
         rb = GetComponent<Rigidbody>();
         dash = GetComponent<Dash>();
         melee = GetComponent<PlayerMelee>();
-        player = GetComponent<Player>();
         bulletScript = GetComponent<PlayerBullet>();
         animator = GetComponent<Animator>();
         plane = new Plane(Vector3.up, Vector3.zero);
