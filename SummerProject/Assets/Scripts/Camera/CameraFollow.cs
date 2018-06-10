@@ -6,13 +6,13 @@ public class CameraFollow : MonoBehaviour
 {
 
     public Transform target;
-    public float distance = 5.0f;
-    public float minDistance = 1f;
-    public float maxDistance = 7f;
     public Vector3 offset;
-    public float smoothSpeed = 5.0f;
-    public float scrollSensitivity = 1f;
-    public Vector3 velocity = Vector3.zero;
+    public float distance            = 12.0f;
+    public float minDistance         = 1f;
+    public float maxDistance         = 15.0f;
+    public float smoothSpeed         = 1.0f;
+    public float scrollSensitivity   = 1f;
+    public Vector3 velocity          = Vector3.zero;
 
     private void LateUpdate()
     {

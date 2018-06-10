@@ -16,12 +16,14 @@ public class PlayerController : MonoBehaviour {
     private Animator animator;
     private Rigidbody rb;
     private Vector3 lastPosition = Vector3.zero;
+    private PlayerMelee melee;
     #endregion
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         dash = GetComponent<Dash>();
+        melee = GetComponent<PlayerMelee>();
         player = GetComponent<Player>();
         bulletScript = GetComponent<PlayerBullet>();
         animator = GetComponent<Animator>();
@@ -30,7 +32,6 @@ public class PlayerController : MonoBehaviour {
 
     void Update()
     {
-
         //rotate player around mouse 
         float distance;
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -48,35 +49,12 @@ public class PlayerController : MonoBehaviour {
         float x = transform.position.x + moveHorizontal * movementSpeed * Time.deltaTime;
         float z = transform.position.z + moveVertical * movementSpeed * Time.deltaTime;
 
-        //player animations
-        Vector3 playerDirection = transform.position - lastPosition;
-        playerDirection.Normalize();
-        Vector3 localDirection = transform.InverseTransformDirection(playerDirection);
-        lastPosition = transform.position;
 
-        if(localDirection.z > 0.1)
-        {
-            animator.SetBool("run", true);
-        }
-        else if(localDirection.z < -0.1)
-        {
-            animator.SetBool("run_back", true);
-        }
-        else if(localDirection.x > 0.0)
-        {
-            animator.SetBool("right", true);
-        }
-        else if (localDirection.x < -0.0)
-        {
-            animator.SetBool("left", true);
-        }
-        else
-        {
-            animator.SetBool("right", false);
-            animator.SetBool("left", false);
-            animator.SetBool("run", false);
-            animator.SetBool("run_back", false);
-        }
+        //TODO: future code for player animations (use blend tree)
+        //if (moveHorizontal != 0 || moveVertical != 0)
+        //    animator.SetBool("run", true);
+        //else
+        //    animator.SetBool("run", false);
 
 
         //update player position
@@ -90,6 +68,15 @@ public class PlayerController : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.LeftShift) && dash.CanStartAbility())
         {
             dash.StartAbility();
+        }
+        if(Input.GetMouseButtonDown(1) && melee.CanStartAbility())
+        {
+            melee.StartAbility();
+            animator.SetBool("Melee", true);
+        }
+        else
+        {
+            animator.SetBool("Melee", false);
         }
         if(dash.abilityOn) dash.UpdateMovement();
     }

@@ -68,14 +68,15 @@
     <Compile Include="Assets\Scripts\Abilities\Dash.cs" />
     <Compile Include="Assets\Scripts\Abilities\IAbility.cs" />
     <Compile Include="Assets\Scripts\Abilities\MovementAbility.cs" />
+    <Compile Include="Assets\Scripts\Abilities\PlayerMelee.cs" />
     <Compile Include="Assets\Scripts\Bullets\Bullet.cs" />
     <Compile Include="Assets\Scripts\Bullets\BulletDestroy.cs" />
     <Compile Include="Assets\Scripts\Bullets\PlayerBullet.cs" />
-    <Compile Include="Assets\Scripts\CameraFollow.cs" />
+    <Compile Include="Assets\Scripts\Camera\CameraFollow.cs" />
     <Compile Include="Assets\Scripts\Enemy\IEnemy.cs" />
     <Compile Include="Assets\Scripts\Enemy\MeleeEnemy.cs" />
     <Compile Include="Assets\Scripts\Enemy\RangedEnemy.cs" />
-    <Compile Include="Assets\Scripts\ObjectPool.cs" />
+    <Compile Include="Assets\Scripts\Game\ObjectPool.cs" />
     <Compile Include="Assets\Scripts\Player\Player.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
     <None Include="Assets\ProCore\ProBuilder\Shader\pb_TransparentOverlay.shader" />

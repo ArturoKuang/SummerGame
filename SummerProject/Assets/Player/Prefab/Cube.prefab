@@ -202,9 +202,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletSpawn: {fileID: 4006479841478132}
-  damage: 2
   speed: 100
-  offset: 2
+  energyCost: 30
+  damage: 2
 --- !u!114 &114179719274931476
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -217,12 +217,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   abilityOn: 1
+  dashDistance: 5
+  dashDuration: 0.05
   collisonLayerMask:
     serializedVersion: 2
     m_Bits: 0
-  dashDistance: 5
-  dashDuration: 0.05
   collisionRayFeetOffSetY: 0.1
+  coolDownDuration: 0.5
 --- !u!114 &114441019034540586
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -236,6 +237,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 100
   energy: 100
+  energyRegain: 1
 --- !u!114 &114639955393666424
 MonoBehaviour:
   m_ObjectHideFlags: 1
