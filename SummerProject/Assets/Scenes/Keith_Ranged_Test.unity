@@ -144,10 +144,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1334717239}
+  offset: {x: 0, y: 5, z: -5}
   distance: 10
   minDistance: 1
   maxDistance: 15
-  offset: {x: 0, y: 5, z: -5}
   smoothSpeed: 0.2
   scrollSensitivity: 10
   velocity: {x: 0.0000007103413, y: 0.012238339, z: -0.012236094}
@@ -529,31 +529,6 @@ Prefab:
       propertyPath: target
       value: 
       objectReference: {fileID: 1334717239}
-    - target: {fileID: 114702345084571442, guid: bdb48549866c7f543850fb3acc6d29af,
-        type: 2}
-      propertyPath: bulletSpeed
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 114702345084571442, guid: bdb48549866c7f543850fb3acc6d29af,
-        type: 2}
-      propertyPath: rotationSpeed
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 195648041748817260, guid: bdb48549866c7f543850fb3acc6d29af,
-        type: 2}
-      propertyPath: m_AutoBraking
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114702345084571442, guid: bdb48549866c7f543850fb3acc6d29af,
-        type: 2}
-      propertyPath: rangedDistance
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 114702345084571442, guid: bdb48549866c7f543850fb3acc6d29af,
-        type: 2}
-      propertyPath: maxWanderDistance
-      value: 2
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bdb48549866c7f543850fb3acc6d29af, type: 2}
   m_IsPrefabParent: 0
