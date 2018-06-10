@@ -6,15 +6,25 @@ using UnityEngine;
 public class RangedEnemy : MonoBehaviour, IEnemy {
 
     [SerializeField]
+    #region attribute
     public Transform target;
+    public Transform bulletSpawn;
     public float health = 60f;
-    public float rangedDistance = 1.5f;
-    public float aggroDistance = 6f;
+    public float rangedDistance =  4f;
+    public float aggroDistance = 7f;
     public float deAggroDistance = 8f;
     public float rangedCD = 1.0f;
     public float rangedDamage = 6f;
+    public float rotationSpeed = 10f;
+    public float bulletSpeed = 10f;
+    public float maxWanderDistance = 1.5f;
     private float rangedStartTime = float.MinValue;
-    private bool isMoving = false;
+    private bool isAggroed = false;
+    private bool isWandering = false;
+    private float randTheta;
+    private Vector3 initialPosition;
+    private Vector3 newPosition;
+    #endregion 
 
     protected NavMeshAgent ThisAgent = null;
 
@@ -23,7 +33,7 @@ public class RangedEnemy : MonoBehaviour, IEnemy {
     private GameObject player;
     private Player playerScript;
     private Animator animator;
-
+    private Collider map;
 
     /**
      * Allows modification of health 
@@ -36,6 +46,7 @@ public class RangedEnemy : MonoBehaviour, IEnemy {
         player = GameObject.FindGameObjectWithTag("Player");
         playerScript = player.GetComponent<Player>();
         animator = GetComponent<Animator>();
+
     }
 
     // Update is called once per frame
@@ -50,6 +61,7 @@ public class RangedEnemy : MonoBehaviour, IEnemy {
         float curr_distance = CheckPlayerDistance();
         if (curr_distance <= rangedDistance) {
             StopMoving();
+            RotateTowards();
             if (CanAttack()) {
                 Debug.Log("PLAYER HIT");
                 // PLACEHOLDER, will change once I get attack animations up and running. It will probably be animator.SetBool("Attack", true)
@@ -57,31 +69,51 @@ public class RangedEnemy : MonoBehaviour, IEnemy {
             }
         }
         // Move if enemy is within range of the player
-        else if ((curr_distance <= aggroDistance) || (curr_distance <= deAggroDistance && isMoving)) {
+        else if ((curr_distance <= aggroDistance) || (curr_distance <= deAggroDistance && isAggroed)) {
             Move();
         }
         // If the player aggro'd the enemy, but has now gone out of range, then stop
-        else if (curr_distance > deAggroDistance) {
-            if (isMoving) {
+        else if (curr_distance > deAggroDistance || !isAggroed) {
+            if (isAggroed) {
                 StopMoving();
             }
-            animator.SetBool("Idle", true);
+            else if (!isWandering) {
+                initialPosition = transform.position;
+                isWandering = true;
+                Wander(initialPosition);
+            }
+            else if (ThisAgent.remainingDistance <= 0.5) {
+                Wander(initialPosition);
+                SetWalkingAnimation();
+            }
         }
+        // If out of range completely, then start to wander
         else {
+
             if (!animator.GetBool("Idle")) {
                 animator.SetBool("Idle", true);
             }
         }
+
+        Debug.Log("dist: " + ThisAgent.remainingDistance);
 
 
     }
 
     /**
      * Attacks the player and takes off their health
-     * TODO: Implement the animation of hitting, and slow down or stop the enemy when it is playing this animation.
+     * TODO: Implement 
      */
     public void Attack() {
-        playerScript.Health -= rangedDamage;
+        //bullets spawn and travel
+        GameObject obj = EnemyObjectPool.current.GetPooledObject();
+        if (obj == null) return;
+        obj.transform.position = bulletSpawn.position;
+        obj.transform.rotation = bulletSpawn.rotation;
+        Rigidbody bulletRB = obj.GetComponent<Rigidbody>();
+        Vector3 direction = (target.position - transform.position).normalized;
+        bulletRB.velocity =  direction * bulletSpeed;
+        obj.SetActive(true);
         rangedStartTime = Time.time;
     }
 
@@ -89,8 +121,10 @@ public class RangedEnemy : MonoBehaviour, IEnemy {
      * Simply move towards the player using navmesh
      */
     public void Move() {
+        ThisAgent.speed = 3f;
         ThisAgent.isStopped = false;
-        isMoving = true;
+        isWandering = false;
+        isAggroed = true;
         ThisAgent.SetDestination(target.position);
         ResetAnimations();
         SetWalkingAnimation();
@@ -101,7 +135,7 @@ public class RangedEnemy : MonoBehaviour, IEnemy {
      * Stops the navmesh agent
      */
     public void StopMoving() {
-        isMoving = false;
+        isAggroed = false;
         ThisAgent.velocity = Vector3.zero;
         ThisAgent.isStopped = true;
     }
@@ -160,6 +194,28 @@ public class RangedEnemy : MonoBehaviour, IEnemy {
         animator.SetBool("Left", false);
         animator.SetBool("Right", false);
         animator.SetBool("Idle", false);
+    }
+
+    /**
+     * Rotates the enemy to the player
+     */
+    private void RotateTowards() {
+        Vector3 direction = (target.position - transform.position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
+    }
+
+    /**
+     * Causes the enemy to wander in a slight radius
+     */
+    private void Wander(Vector3 initialTransform) {
+        ThisAgent.speed = 1.5f;
+        ThisAgent.isStopped = false;
+        randTheta += Random.Range(0, 360);
+        float randX = initialTransform.x + (maxWanderDistance * Mathf.Cos(randTheta));
+        float randZ = initialTransform.z + (maxWanderDistance * Mathf.Sin(randTheta));
+        newPosition = new Vector3(randX, initialTransform.y, randZ);
+        ThisAgent.SetDestination(newPosition);
     }
 
 
